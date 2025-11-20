@@ -14,12 +14,28 @@ dotenv.config();
 const app = express();
 
 // Cors configuration
-app.use(cors({
-  origin: "https://bloodflow-mu.vercel.app",
-  methods: "GET,POST,PUT,DELETE,OPTIONS",
-  allowedHeaders: "Content-Type,Authorization",
-  credentials: true
-}));
+const allowedOrigins = [
+  "https://bloodflow-mu.vercel.app",
+  "http://localhost:3000"
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Permitir requests sin origen (como en Postman)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Origin no permitido por CORS"));
+      }
+    },
+    methods: "GET,POST,PUT,DELETE,OPTIONS",
+    allowedHeaders: "Content-Type,Authorization",
+    credentials: true
+  })
+);
 
 app.options("*", cors());
 
